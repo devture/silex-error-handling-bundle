@@ -1,0 +1,10 @@
+{
+    "devture_error": {
+        "401": "You are not authorized to access this resource (error 401).",
+        "404": "The requested resource cannot be found (error 404).",
+        "405": "The requested method is not allowed (error 405).",
+        "something_went_wrong": "Something went wrong. Our team has been notified about the problem.",
+        "may_back_reload_and_retry": "You may go back, reload the page and try again.",
+        "may_try_again_later": "You may want to try again later."
+    }
+}

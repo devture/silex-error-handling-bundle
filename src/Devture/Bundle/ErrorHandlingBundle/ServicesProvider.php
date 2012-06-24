@@ -42,7 +42,7 @@ class ServicesProvider implements ServiceProviderInterface {
         $config = $this->config;
 
         $app['localization.translator.resource_loader']->addResources(dirname(__FILE__) . '/Resources/translations/');
-        $app['twig.loader']->addLoader(new \Twig_Loader_Filesystem(dirname(__FILE__) . '/Resources/views/'));
+        $app['twig.loader.filesystem']->addPath(dirname(__FILE__) . '/Resources/views/');
 
         if (isset($config['email_notifications'])) {
             $this->setupEmailNotifications($app, $config);

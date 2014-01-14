@@ -1,5 +1,6 @@
 <?php
 namespace Devture\Bundle\ErrorHandlingBundle;
+
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -107,8 +108,8 @@ class ServicesProvider implements ServiceProviderInterface {
             return;
         }
 
-        $app['localization.translator.resource_loader']->addResources(dirname(__FILE__) . '/Resources/translations/');
-        $app['twig.loader.filesystem']->addPath(dirname(__FILE__) . '/Resources/views/');
+        $app['devture_localization.translator.resource_loader']->addResources(dirname(__FILE__) . '/Resources/translations/');
+        $app['twig.loader.filesystem']->addPath(__DIR__ . '/Resources/views/');
 
         $app['devture_error.error_handler']->init();
 

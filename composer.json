@@ -9,7 +9,7 @@
 	],
 	"require": {
 		"devture/silex-localization-bundle": "2.*",
-		"swiftmailer/swiftmailer": ">=4.3,<5.1-dev"
+		"swiftmailer/swiftmailer": ">=4.3,<6.0-dev"
 	},
 	"autoload": {
 		"psr-0": {

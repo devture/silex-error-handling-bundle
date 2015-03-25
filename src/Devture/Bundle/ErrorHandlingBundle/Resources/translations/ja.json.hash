@@ -1,0 +1,8 @@
+{
+	"devture_error.401": "059e27f1bf2fc3e9e66ea4b22084d7bb5d71d579dd7e5b1323635ff123302705",
+	"devture_error.404": "972fb0d3cb52934f0fdda414a2bc448a7966ef5b4ff54597e413f2975c41f75f",
+	"devture_error.405": "fc6a5204e9a8cc6a23033da12045af7191900e1a2bae59e9f0d6d9ff25ebd2a3",
+	"devture_error.something_went_wrong": "99be2fa43c57921e4b72786ec77153ba5df60c04a4e4fda25f571d1bc5634c7d",
+	"devture_error.may_back_reload_and_retry": "c1708141a6d869468f2f5783a407d7b124547f76d14cd7b1d3ce65cdb81b0b11",
+	"devture_error.may_try_again_later": "af941a266377c63170253b1948d0deb8288cc6d13e46b828c938ede5add1861d"
+}

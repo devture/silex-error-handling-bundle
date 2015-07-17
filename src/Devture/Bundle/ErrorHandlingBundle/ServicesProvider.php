@@ -28,9 +28,9 @@ class ServicesProvider implements ServiceProviderInterface {
         ));
 
         //HTTP status codes, for which email notifications won't be sent.
-        $app['devture_error.email_notifications_ignore_http_codes'] = new \ArrayObject(array(
-            401,  404, 405,
-        ));
+        $app['devture_error.email_notifications_ignore_http_codes'] = new \ArrayObject(
+            range(400, 499)
+        );
 
         $app['devture_error.error_handler'] = function ($app) {
             return new \Devture\Bundle\ErrorHandlingBundle\ErrorHandler($app['debug'], $app['devture_error.error_exception_callback']);

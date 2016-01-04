@@ -29,11 +29,21 @@ class ErrorHandler extends ExceptionHandler {
 		//Fatal errors are caught from a "register_shutdown_function" handler
 		//in the Symfony ErrorHandler and they're passed to the currently
 		//registered exception handler (but only if it's an instanceof ExceptionHandler, like this one).
-		set_exception_handler(array($this, 'handle'));
+		set_exception_handler(array($this, 'handleThrowable'));
 	}
 
-	public function handle(\Exception $e) {
+	/**
+	 * @param \Throwable $e
+	 */
+	public function handleThrowable($e) {
 		unset($this->reservedMemory);
+
+		//Wrap PHP7 errors in an \Exception derivative, as the symfony/debug ExceptionHadler::handle()
+		//cannot handle a top-level \Error, but will happily work with an \Error nested within an \Exception.
+		//Using FatalThrowableError, instead of \Exception to prevent losing the debug information while flattening.
+		if ($e instanceof \Error) {
+			$e = new \Symfony\Component\Debug\Exception\FatalThrowableError($e);
+		}
 
 		$errorExceptionCallback = $this->errorExceptionCallback;
 		$errorExceptionCallback($e);

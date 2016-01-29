@@ -1,8 +1,8 @@
 <?php
 namespace Devture\Bundle\ErrorHandlingBundle;
 
-use Symfony\Component\HttpKernel\Debug\ErrorHandler as SymfonyErrorHandler;
-use Symfony\Component\HttpKernel\Debug\ExceptionHandler;
+use Symfony\Component\Debug\ErrorHandler as SymfonyErrorHandler;
+use Symfony\Component\Debug\ExceptionHandler;
 
 class ErrorHandler extends ExceptionHandler {
 

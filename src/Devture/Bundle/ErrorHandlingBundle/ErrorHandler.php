@@ -20,16 +20,14 @@ class ErrorHandler extends ExceptionHandler {
 		//If these errors happen in the request/response cycle (which is most likely),
 		//they will be as regular exeptions (\Silex\Application::error() callbacks will be called).
 		//For errors triggered in other places, the below exception handler (for fatal errors) is used.
-		SymfonyErrorHandler::register();
+		$errorHandler = SymfonyErrorHandler::register();
 
-		//Sets up a global exception handler, because Silex doesn't mess around
-		//with the global state and that prevents us from handling fatal errors,
-		//or other possible errors outside of the request/response cycle.
+		//As a side effect, this makes  makes the ErrorHandler take over exception handling as well.
 		//--
 		//Fatal errors are caught from a "register_shutdown_function" handler
-		//in the Symfony ErrorHandler and they're passed to the currently
+		//in the Symfony ErrorHandler, converted to exceptions and passed to the currently
 		//registered exception handler (but only if it's an instanceof ExceptionHandler, like this one).
-		set_exception_handler(array($this, 'handleThrowable'));
+		$errorHandler->setExceptionHandler(array($this, 'handleThrowable'));
 	}
 
 	/**

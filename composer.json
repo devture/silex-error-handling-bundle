@@ -1,6 +1,6 @@
 {
 	"name": "devture/silex-error-handling-bundle",
-	"description": "Silex bundle that error handling and email notifications",
+	"description": "Silex bundle providing error handling and email notifications",
 	"authors": [
 		{
 			"name": "Slavi Pantaleev",

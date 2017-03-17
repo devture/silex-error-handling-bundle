@@ -8,7 +8,7 @@
 		}
 	],
 	"require": {
-		"devture/silex-localization-bundle": "2.*",
+		"devture/silex-localization-bundle": "^3.0",
 		"symfony/http-kernel": ">=3.0,<4.0-dev",
 		"symfony/debug": ">=3.0,<4.0-dev",
 		"swiftmailer/swiftmailer": ">=4.3,<6.0-dev"

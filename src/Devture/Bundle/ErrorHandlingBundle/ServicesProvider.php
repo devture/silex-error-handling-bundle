@@ -1,11 +1,9 @@
 <?php
 namespace Devture\Bundle\ErrorHandlingBundle;
 
-use Silex\Application;
-use Silex\ServiceProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
 
-class ServicesProvider implements ServiceProviderInterface {
+class ServicesProvider implements \Pimple\ServiceProviderInterface, \Silex\Api\BootableProviderInterface {
 
 	private $config;
 
@@ -18,8 +16,8 @@ class ServicesProvider implements ServiceProviderInterface {
 		$this->config = array_merge($defaultConfig, $config);
 	}
 
-	public function register(Application $app) {
-		$app['devture_error.views'] = new \ArrayObject(array(
+	public function register(\Pimple\Container $container) {
+		$container['devture_error.views'] = new \ArrayObject(array(
 			'401' => 'DevtureErrorHandlingBundle/401.html.twig',
 			'404' => 'DevtureErrorHandlingBundle/404.html.twig',
 			'405' => 'DevtureErrorHandlingBundle/405.html.twig',
@@ -28,50 +26,50 @@ class ServicesProvider implements ServiceProviderInterface {
 		));
 
 		//HTTP status codes, for which email notifications won't be sent.
-		$app['devture_error.email_notifications_ignore_http_codes'] = new \ArrayObject(
+		$container['devture_error.email_notifications_ignore_http_codes'] = new \ArrayObject(
 			range(400, 499)
 		);
 
-		$app['devture_error.error_handler'] = function ($app) {
-			return new \Devture\Bundle\ErrorHandlingBundle\ErrorHandler($app['debug'], $app['devture_error.error_exception_callback']);
+		$container['devture_error.error_handler'] = function ($container) {
+			return new \Devture\Bundle\ErrorHandlingBundle\ErrorHandler($container['debug'], $container['devture_error.error_exception_callback']);
 		};
 
 		/**
 		 * Called for all errors converted to exceptions outside the Silex request/response cycle
 		 * and for fatal errors (in all cases).
 		 */
-		$app['devture_error.error_exception_callback'] = $app->protect(function (\Exception $e) {
+		$container['devture_error.error_exception_callback'] = $container->protect(function (\Exception $e) {
 			//Nothing more to do (unless email notifications are enabled, see below).
 		});
 
-		if (!$app['debug'] && isset($this->config['email_notifications'])) {
-			$this->setupEmailNotifications($app, $this->config);
+		if (!$container['debug'] && isset($this->config['email_notifications'])) {
+			$this->setupEmailNotifications($container, $this->config);
 		}
 	}
 
-	private function setupEmailNotifications(Application $app, array $config) {
+	private function setupEmailNotifications(\Pimple\Container $container, array $config) {
 		$notificationsConfig = $config['email_notifications'];
 
-		$app['devture_error.mailer'] = $app->share(function ($app) use ($notificationsConfig) {
-			return $app[$notificationsConfig['mailer_service_id']];
-		});
+		$container['devture_error.mailer'] = function ($container) use ($notificationsConfig) {
+			return $container[$notificationsConfig['mailer_service_id']];
+		};
 
-		$app['devture_error.mailer_flush_messages_callback'] = $app->protect(function () use ($app) {
-			//$app['devture_error.mailer'] is most likely pointing to the default swiftmailer,
+		$container['devture_error.mailer_flush_messages_callback'] = $container->protect(function () use ($container) {
+			//$container['devture_error.mailer'] is most likely pointing to the default swiftmailer,
 			//which uses a message spool and does not send right away. This clears that spool.
 			//If some other mailer is used, this may not work or actually have a negative impact.
 			//--
-			//Messages are only stored in a queue, to be flushed from an $app->finish() filter.
+			//Messages are only stored in a queue, to be flushed from an $container->finish() filter.
 			//Because sending exception emails is important and has to always work, we'll flush
 			//explicitly now. This fixes sending from within console commands, or for Fatal Errors.
 			//Fatal Errors are handled from within a register_shutdown_function hanler, which is too
 			//late for regular spool-sending to work anyway.
-			$app['swiftmailer.spooltransport']->getSpool()->flushQueue($app['swiftmailer.transport']);
+			$container['swiftmailer.spooltransport']->getSpool()->flushQueue($container['swiftmailer.transport']);
 		});
 
-		$app['devture_error.send_exception_email'] = $app->protect(function (\Exception $exception) use ($app, $config, $notificationsConfig) {
+		$container['devture_error.send_exception_email'] = $container->protect(function (\Exception $exception) use ($container, $config, $notificationsConfig) {
 			try {
-				$request = $app['request'];
+				$request = $container['request'];
 			} catch (\RuntimeException $e) {
 				//Working outside of a request scope.
 				$request = null;
@@ -91,15 +89,15 @@ class ServicesProvider implements ServiceProviderInterface {
 			$message->setTo($notificationsConfig['receivers']);
 			$message->setBody($body);
 
-			$app['devture_error.mailer']->send($message);
+			$container['devture_error.mailer']->send($message);
 
-			$app['devture_error.mailer_flush_messages_callback']();
+			$container['devture_error.mailer_flush_messages_callback']();
 		});
 
-		$app['devture_error.error_exception_callback'] = $app->raw('devture_error.send_exception_email');
+		$container['devture_error.error_exception_callback'] = $container->raw('devture_error.send_exception_email');
 	}
 
-	public function boot(Application $app) {
+	public function boot(\Silex\Application $app) {
 		if ($app['debug']) {
 			//Silex's `exception_handler` will kick in when in debug mode - it already does a good job at showing errors.
 			//We don't want to send notification emails or render a pretty page, so we have nothing to do

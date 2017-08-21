@@ -76,15 +76,15 @@ class ServicesProvider implements \Pimple\ServiceProviderInterface, \Silex\Api\B
 			}
 
 			$body = "Exception: " . get_class($exception) . "\n\n";
-            $body .= "Error Code: " . $exception->getCode() . "\n\n";
+			$body .= "Error Code: " . $exception->getCode() . "\n\n";
 			$body .= "Message: " . $exception->getMessage() . "\n\n";
 			if ($request) {
 				$body .= "Happened at: " . $request->getRequestUri() . " for " . $request->getClientIp() . "\n\n";
 			} else {
 				$body .= "Happened outside of a request scope.\n\n";
 			}
-            $body .= "File: " . $exception->getFile() . "\n";
-            $body .= "Line: " . $exception->getLine() . "\n\n";
+			$body .= "File: " . $exception->getFile() . "\n";
+			$body .= "Line: " . $exception->getLine() . "\n\n";
 
 			$body .= "Trace:\n" . $exception->getTraceAsString() . "\n\n";
 
